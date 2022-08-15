@@ -53,7 +53,9 @@ class IMAP4Client:
         return {'result': True, 'action_type': 'mailbox_list', 'data': directories_list}
 
     def select_mailbox_folder(self, **kwargs) -> dict:
-        typ, dat = self.imap_connection.select(mailbox=kwargs.get('mailbox'), readonly=True)
+        typ, dat = self.imap_connection.select(mailbox=kwargs.get('mailbox') if " " not in kwargs.get('mailbox') 
+                                                                             else "\"" + kwargs.get('mailbox') + "\""  
+                                               , readonly=True)
         if typ.__eq__('OK'):
             return {'result': True, 'action_type': 'select_mailbox'}
         else:
