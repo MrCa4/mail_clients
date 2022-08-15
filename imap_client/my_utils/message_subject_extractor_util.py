@@ -1,5 +1,7 @@
 import email
+import re
 
+ENCODING_PREFIX = ['utf', 'iso-8859', 'koir8-r', 'koir9-r', 'windows-1251']
 
 class MessageParserUtil:
 
@@ -11,11 +13,8 @@ class MessageParserUtil:
         message = email.message_from_bytes(msg)
         msg_header = message.get(header)
         if msg_header is None:
-            return "empty_" + header
-        if 'utf' not in msg_header.lower() \
-                and 'iso-8859' not in msg_header.lower() \
-                and 'koi9-r' not in msg_header.lower() \
-                and 'windows-1251' not in msg_header.lower():
+            return "empty_" + header        
+        if not bool(re.search('(?:{})'.format('|'.join(ENCODING_PREFIX)), msg_header.lower(), flags=re.I)):       
             self.message_subject = msg_header
         else:
             self.message_subject = email.header.decode_header(message.get(header))[0][0]. \
